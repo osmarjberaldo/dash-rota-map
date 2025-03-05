@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { 
   MapContainer, 
@@ -297,8 +296,8 @@ const Map: React.FC<MapProps> = ({
   return (
     <div className={`w-full h-full rounded-lg overflow-hidden shadow-lg border ${className}`}>
       <MapContainer
-        defaultCenter={[52, 5]} // Center on Netherlands
-        defaultZoom={5}
+        center={[52, 5]} // Center on Netherlands
+        zoom={5}
         style={{ height: '100%', width: '100%' }}
         zoomControl={false}
         attributionControl={false}
