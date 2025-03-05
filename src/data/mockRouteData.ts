@@ -15,140 +15,173 @@ export interface Route {
   averageTime: number; // in hours
 }
 
+// Updated with 25 major global ports
 export const mockPorts: Port[] = [
+  // Asia
   {
     id: 'p001',
+    name: 'Shanghai',
+    position: [121.4737, 31.2304],
+    country: 'China'
+  },
+  {
+    id: 'p002',
+    name: 'Singapore',
+    position: [103.8198, 1.3521],
+    country: 'Singapore'
+  },
+  {
+    id: 'p003',
+    name: 'Hong Kong',
+    position: [114.1694, 22.3193],
+    country: 'China'
+  },
+  {
+    id: 'p004',
+    name: 'Busan',
+    position: [129.0403, 35.1796],
+    country: 'South Korea'
+  },
+  {
+    id: 'p005',
+    name: 'Dubai',
+    position: [55.2708, 25.2048],
+    country: 'UAE'
+  },
+  
+  // Europe
+  {
+    id: 'p006',
     name: 'Rotterdam',
     position: [4.4, 51.9],
     country: 'Netherlands'
   },
   {
-    id: 'p002',
+    id: 'p007',
     name: 'Antwerp',
     position: [4.4, 51.2],
     country: 'Belgium'
   },
   {
-    id: 'p003',
+    id: 'p008',
     name: 'Hamburg',
     position: [10.0, 53.5],
     country: 'Germany'
   },
   {
-    id: 'p004',
-    name: 'London',
-    position: [0.1, 51.5],
-    country: 'United Kingdom'
-  },
-  {
-    id: 'p005',
-    name: 'Amsterdam',
-    position: [4.9, 52.4],
-    country: 'Netherlands'
-  },
-  {
-    id: 'p006',
-    name: 'Oslo',
-    position: [10.8, 59.9],
-    country: 'Norway'
-  },
-  {
-    id: 'p007',
-    name: 'Copenhagen',
-    position: [12.6, 55.7],
-    country: 'Denmark'
-  },
-  {
-    id: 'p008',
-    name: 'Dublin',
-    position: [-6.3, 53.3],
-    country: 'Ireland'
-  },
-  {
     id: 'p009',
-    name: 'Le Havre',
-    position: [0.1, 49.5],
-    country: 'France'
+    name: 'Valencia',
+    position: [-0.3239, 39.4699],
+    country: 'Spain'
   },
   {
     id: 'p010',
-    name: 'Southampton',
-    position: [-1.4, 50.9],
-    country: 'United Kingdom'
+    name: 'Piraeus',
+    position: [23.6351, 37.9422],
+    country: 'Greece'
+  },
+  
+  // Americas
+  {
+    id: 'p011',
+    name: 'Los Angeles',
+    position: [-118.2437, 33.7295],
+    country: 'USA'
+  },
+  {
+    id: 'p012',
+    name: 'New York',
+    position: [-74.0060, 40.7128],
+    country: 'USA'
+  },
+  {
+    id: 'p013',
+    name: 'Vancouver',
+    position: [-123.1207, 49.2827],
+    country: 'Canada'
+  },
+  {
+    id: 'p014',
+    name: 'Santos',
+    position: [-46.3053, -23.9535],
+    country: 'Brazil'
+  },
+  {
+    id: 'p015',
+    name: 'Panama Canal',
+    position: [-79.9191, 9.0820],
+    country: 'Panama'
+  },
+  
+  // Africa & Middle East
+  {
+    id: 'p016',
+    name: 'Durban',
+    position: [31.0218, -29.8587],
+    country: 'South Africa'
+  },
+  {
+    id: 'p017',
+    name: 'Tangier',
+    position: [-5.8129, 35.7595],
+    country: 'Morocco'
+  },
+  {
+    id: 'p018',
+    name: 'Alexandria',
+    position: [29.9187, 31.2001],
+    country: 'Egypt'
+  },
+  
+  // Oceania
+  {
+    id: 'p019',
+    name: 'Sydney',
+    position: [151.2093, -33.8688],
+    country: 'Australia'
+  },
+  {
+    id: 'p020',
+    name: 'Melbourne',
+    position: [144.9631, -37.8136],
+    country: 'Australia'
+  },
+  {
+    id: 'p021',
+    name: 'Auckland',
+    position: [174.7633, -36.8485],
+    country: 'New Zealand'
+  },
+  
+  // Additional major ports
+  {
+    id: 'p022',
+    name: 'Tokyo',
+    position: [139.6917, 35.6895],
+    country: 'Japan'
+  },
+  {
+    id: 'p023',
+    name: 'Mumbai',
+    position: [72.8777, 19.0760],
+    country: 'India'
+  },
+  {
+    id: 'p024',
+    name: 'Houston',
+    position: [-95.3698, 29.7604],
+    country: 'USA'
+  },
+  {
+    id: 'p025',
+    name: 'Colombo',
+    position: [79.8612, 6.9271],
+    country: 'Sri Lanka'
   }
 ];
 
-export const mockRoutes: Route[] = [
-  {
-    id: 'r001',
-    origin: mockPorts.find(p => p.name === 'London')!,
-    destination: mockPorts.find(p => p.name === 'Rotterdam')!,
-    waypoints: [
-      [0.1, 51.5], // London
-      [1.5, 51.6], 
-      [3.0, 51.8],
-      [4.4, 51.9] // Rotterdam
-    ],
-    distance: 215,
-    averageTime: 14
-  },
-  {
-    id: 'r002',
-    origin: mockPorts.find(p => p.name === 'Oslo')!,
-    destination: mockPorts.find(p => p.name === 'Amsterdam')!,
-    waypoints: [
-      [10.8, 59.9], // Oslo
-      [10.5, 58.0],
-      [9.0, 57.0],
-      [8.0, 55.5],
-      [6.0, 54.0],
-      [5.0, 53.0],
-      [4.9, 52.4] // Amsterdam
-    ],
-    distance: 520,
-    averageTime: 38
-  },
-  {
-    id: 'r003',
-    origin: mockPorts.find(p => p.name === 'Copenhagen')!,
-    destination: mockPorts.find(p => p.name === 'Hamburg')!,
-    waypoints: [
-      [12.6, 55.7], // Copenhagen
-      [12.0, 54.8],
-      [11.0, 54.5],
-      [10.0, 53.5] // Hamburg
-    ],
-    distance: 180,
-    averageTime: 10
-  },
-  {
-    id: 'r004',
-    origin: mockPorts.find(p => p.name === 'Dublin')!,
-    destination: mockPorts.find(p => p.name === 'Antwerp')!,
-    waypoints: [
-      [-6.3, 53.3], // Dublin
-      [-5.0, 53.0],
-      [-2.0, 52.0],
-      [0.0, 51.5],
-      [2.0, 51.3],
-      [4.4, 51.2] // Antwerp
-    ],
-    distance: 685,
-    averageTime: 45
-  },
-  {
-    id: 'r005',
-    origin: mockPorts.find(p => p.name === 'Southampton')!,
-    destination: mockPorts.find(p => p.name === 'Le Havre')!,
-    waypoints: [
-      [-1.4, 50.9], // Southampton
-      [-0.7, 50.5],
-      [0.1, 49.5] // Le Havre
-    ],
-    distance: 120,
-    averageTime: 8
-  }
-];
+// Remove existing routes as they don't represent realistic sea routes
+export const mockRoutes: Route[] = [];
 
 export const getRouteById = (id: string): Route | undefined => {
   return mockRoutes.find(route => route.id === id);

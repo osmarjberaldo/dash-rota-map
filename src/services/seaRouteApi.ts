@@ -32,11 +32,15 @@ export const calculateSeaRoute = async (params: RouteCalculationParams): Promise
     // Construct the URL for the Sea Route API
     const url = `${API_BASE_URL}/${originLon},${originLat};${destinationLon},${destinationLat}?speed=${speed}`;
     
+    console.log("Calling Sea Route API:", url);
+    
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'x-api-key': SEA_ROUTE_API_KEY,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'accept': 'application/json',
+        'accept-version': '2.0'
       }
     });
     
@@ -53,6 +57,7 @@ export const calculateSeaRoute = async (params: RouteCalculationParams): Promise
     }
     
     const data = await response.json();
+    console.log("Sea Route API response:", data);
     
     // Extract waypoints from the GeoJSON response
     const waypoints = data.geometry.coordinates.map((coord: number[]) => 

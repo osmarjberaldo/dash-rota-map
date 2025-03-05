@@ -141,139 +141,137 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
     <Card className={`p-5 bg-white dark:bg-black/20 ${className}`}>
       <h2 className="text-lg font-semibold mb-4">Route Search</h2>
       
-      {(originPort || destinationPort) && (
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex flex-col space-y-3 w-full">
-            {originPort && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
-                    <MapPin className="w-4 h-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Origin</p>
-                    <p className="text-sm font-medium">{originPort.name}, {originPort.country}</p>
-                  </div>
-                </div>
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  onClick={() => setSelectedOriginId(undefined)}
-                  className="h-6 px-2"
-                >
-                  Change
-                </Button>
-              </div>
-            )}
-            
-            {destinationPort && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
-                    <Navigation className="w-4 h-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Destination</p>
-                    <p className="text-sm font-medium">{destinationPort.name}, {destinationPort.country}</p>
-                  </div>
-                </div>
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  onClick={() => setSelectedDestinationId(undefined)}
-                  className="h-6 px-2"
-                >
-                  Change
-                </Button>
-              </div>
-            )}
-            
-            {originPort && destinationPort && (
-              <div className="pt-2">
-                <div className="flex items-center space-x-2 mb-2">
-                  <label htmlFor="shipSpeed" className="text-sm">Ship Speed (knots):</label>
-                  <Input
-                    id="shipSpeed"
-                    type="number"
-                    min="1"
-                    max="50"
-                    value={shipSpeed}
-                    onChange={(e) => setShipSpeed(Number(e.target.value))}
-                    className="w-20 h-8 py-1"
-                  />
-                </div>
-                <Button 
-                  className="w-full" 
-                  onClick={handleCalculateRoute}
-                  disabled={isCalculating}
-                >
-                  {isCalculating ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Calculating Route...
-                    </>
-                  ) : (
-                    <>
-                      <Ship className="mr-2 h-4 w-4" />
-                      Calculate Route
-                    </>
-                  )}
-                </Button>
-              </div>
-            )}
-            
-            <div className="pt-1">
-              <Button 
-                size="sm" 
-                variant="outline" 
-                onClick={handleClear}
-                className="w-full"
-              >
-                Clear Selection
-              </Button>
+      <div className="mb-4 flex flex-col space-y-3 w-full">
+        {/* Origin Section */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
+              <MapPin className="w-4 h-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Origin</p>
+              {originPort ? (
+                <p className="text-sm font-medium">{originPort.name}, {originPort.country}</p>
+              ) : (
+                <p className="text-sm font-medium text-muted-foreground">Not selected</p>
+              )}
             </div>
           </div>
+          <Button 
+            size="sm" 
+            variant={originPort ? "ghost" : "outline"} 
+            onClick={() => {
+              if (originPort) {
+                setSelectedOriginId(undefined);
+              } else {
+                setSearchMode('origin');
+                handleSelectOnMap('origin');
+              }
+            }}
+            className="h-6 px-2"
+          >
+            {originPort ? 'Change' : 'Select'}
+          </Button>
         </div>
-      )}
-      
-      {!originPort && !destinationPort && (
-        <>
-          <div className="mb-3">
+            
+        {/* Destination Section */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
+              <Navigation className="w-4 h-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Destination</p>
+              {destinationPort ? (
+                <p className="text-sm font-medium">{destinationPort.name}, {destinationPort.country}</p>
+              ) : (
+                <p className="text-sm font-medium text-muted-foreground">Not selected</p>
+              )}
+            </div>
+          </div>
+          <Button 
+            size="sm" 
+            variant={destinationPort ? "ghost" : "outline"} 
+            onClick={() => {
+              if (destinationPort) {
+                setSelectedDestinationId(undefined);
+              } else {
+                setSearchMode('destination');
+                handleSelectOnMap('destination');
+              }
+            }}
+            className="h-6 px-2"
+          >
+            {destinationPort ? 'Change' : 'Select'}
+          </Button>
+        </div>
+        
+        {/* Calculate Route Section - Only show when both ports are selected */}
+        {originPort && destinationPort && (
+          <div className="pt-2">
+            <div className="flex items-center space-x-2 mb-2">
+              <label htmlFor="shipSpeed" className="text-sm">Ship Speed (knots):</label>
+              <Input
+                id="shipSpeed"
+                type="number"
+                min="1"
+                max="50"
+                value={shipSpeed}
+                onChange={(e) => setShipSpeed(Number(e.target.value))}
+                className="w-20 h-8 py-1"
+              />
+            </div>
             <Button 
-              variant="outline" 
-              size="sm" 
-              className="w-full mb-2"
-              onClick={() => handleSelectOnMap('origin')}
+              className="w-full" 
+              onClick={handleCalculateRoute}
+              disabled={isCalculating}
             >
-              <MapPin className="h-4 w-4 mr-2" />
-              Select Origin Port on Map
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="w-full"
-              onClick={() => handleSelectOnMap('destination')}
-            >
-              <Navigation className="h-4 w-4 mr-2" />
-              Select Destination Port on Map
+              {isCalculating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Calculating Route...
+                </>
+              ) : (
+                <>
+                  <Ship className="mr-2 h-4 w-4" />
+                  Calculate Route
+                </>
+              )}
             </Button>
           </div>
+        )}
+        
+        {/* Clear Selection */}
+        {(originPort || destinationPort) && (
+          <div className="pt-1">
+            <Button 
+              size="sm" 
+              variant="outline" 
+              onClick={handleClear}
+              className="w-full"
+            >
+              Clear Selection
+            </Button>
+          </div>
+        )}
+      </div>
+      
+      {/* Search by Name */}
+      {(!originPort || !destinationPort) && (
+        <>
           <div className="text-center text-sm text-muted-foreground mb-3">
-            — or search by name —
+            Search for {searchMode === 'origin' ? 'origin' : 'destination'} port
+          </div>
+          <div className="relative">
+            <Input
+              className="pl-10"
+              placeholder={`Search for ${searchMode === 'origin' ? 'origin' : 'destination'} port...`}
+              value={query}
+              onChange={handleSearch}
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           </div>
         </>
-      )}
-      
-      {(!originPort || !destinationPort) && (
-        <div className="relative">
-          <Input
-            className="pl-10"
-            placeholder={`Search for ${!originPort ? 'origin' : 'destination'} port...`}
-            value={query}
-            onChange={handleSearch}
-          />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        </div>
       )}
       
       {query.length > 1 && searchResults.length > 0 && (
@@ -297,6 +295,29 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
       {query.length > 1 && searchResults.length === 0 && (
         <div className="mt-2 p-3 text-center text-sm text-muted-foreground">
           No ports found. Try a different search term.
+        </div>
+      )}
+      
+      {!query && !originPort && !destinationPort && (
+        <div className="mt-3">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full mb-2"
+            onClick={() => handleSelectOnMap('origin')}
+          >
+            <MapPin className="h-4 w-4 mr-2" />
+            Select Origin Port on Map
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full"
+            onClick={() => handleSelectOnMap('destination')}
+          >
+            <Navigation className="h-4 w-4 mr-2" />
+            Select Destination Port on Map
+          </Button>
         </div>
       )}
     </Card>

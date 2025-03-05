@@ -296,15 +296,13 @@ const Map: React.FC<MapProps> = ({
   return (
     <div className={`w-full h-full rounded-lg overflow-hidden shadow-lg border ${className}`}>
       <MapContainer
-        center={[52, 5]} // Center on Netherlands
-        zoom={5}
+        center={[20, 0]} // Center the map on a more global view
+        zoom={2}
         style={{ height: '100%', width: '100%' }}
         zoomControl={false}
-        attributionControl={false}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         {vesselMarkers}
         {portMarkers}
