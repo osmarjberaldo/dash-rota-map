@@ -9,7 +9,7 @@ import {
   CircleMarker
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Icon, DivIcon } from 'leaflet';
+import { Icon, DivIcon, LatLngTuple } from 'leaflet';
 import { Vessel } from '@/data/mockVesselData';
 import { Port, Route } from '@/data/mockRouteData';
 import { MapMode } from '@/hooks/useMapData';
@@ -293,16 +293,23 @@ const Map: React.FC<MapProps> = ({
     );
   }) : [];
 
+  // Fixed center position as a LatLngTuple (this type is more explicit for TypeScript)
+  const defaultCenter: LatLngTuple = [20, 0];
+  const defaultZoom = 2;
+
   return (
     <div className={`w-full h-full rounded-lg overflow-hidden shadow-lg border ${className}`}>
       <MapContainer
-        center={[20, 0]} // Center the map on a more global view
-        zoom={2}
         style={{ height: '100%', width: '100%' }}
         zoomControl={false}
+        // Using proper props for MapContainer based on react-leaflet v4
+        // The issue was that we needed to pass this as JSX element props, not as an object property
+        center={defaultCenter}
+        zoom={defaultZoom}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          // No attribution needed
         />
         {vesselMarkers}
         {portMarkers}
