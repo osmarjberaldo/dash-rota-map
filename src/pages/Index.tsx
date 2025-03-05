@@ -22,7 +22,7 @@ import {
 
 const Index = () => {
   const [sidebarVisible, setSidebarVisible] = useState(true);
-  const [activeTab, setActiveTab] = useState<'statistics' | 'trends' | 'search'>('statistics');
+  const [activeTab, setActiveTab] = useState<'statistics' | 'trends' | 'search'>('search'); // Default to search tab
   
   const { 
     vessels,
@@ -41,7 +41,13 @@ const Index = () => {
     selectedOriginId,
     setSelectedOriginId,
     selectedDestinationId,
-    setSelectedDestinationId
+    setSelectedDestinationId,
+    selectingOrigin,
+    setSelectingOrigin,
+    selectingDestination,
+    setSelectingDestination,
+    handlePortSelect,
+    handleCalculatedRoute
   } = useMapData();
 
   const toggleSidebar = () => {
@@ -116,6 +122,10 @@ const Index = () => {
                     setSelectedOriginId={setSelectedOriginId}
                     selectedDestinationId={selectedDestinationId}
                     setSelectedDestinationId={setSelectedDestinationId}
+                    setSelectingOrigin={setSelectingOrigin}
+                    setSelectingDestination={setSelectingDestination}
+                    onCalculateRoute={handleCalculatedRoute}
+                    ports={ports}
                   />
                 </div>
               )}
@@ -198,6 +208,9 @@ const Index = () => {
               selectedRoute={selectedRoute}
               mapMode={mapMode}
               onVesselSelect={setSelectedVesselId}
+              onPortSelect={handlePortSelect}
+              selectingOrigin={selectingOrigin}
+              selectingDestination={selectingDestination}
               className="h-full"
             />
           </div>

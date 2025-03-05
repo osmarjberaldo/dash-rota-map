@@ -36,6 +36,9 @@ interface MapProps {
   selectedRoute?: Route;
   mapMode: MapMode;
   onVesselSelect: (vesselId: string) => void;
+  onPortSelect?: (portId: string) => void;
+  selectingOrigin?: boolean;
+  selectingDestination?: boolean;
   className?: string;
 }
 
@@ -81,6 +84,9 @@ const Map: React.FC<MapProps> = ({
   selectedRoute,
   mapMode,
   onVesselSelect,
+  onPortSelect,
+  selectingOrigin = false,
+  selectingDestination = false,
   className = ''
 }) => {
   // Get status color for a vessel
@@ -136,12 +142,23 @@ const Map: React.FC<MapProps> = ({
     return (
       <Marker 
         key={vessel.id}
-        position={[vessel.position[1], vessel.position[0]]} 
-        icon={vesselIcon}
+        position={[vessel.position[1], vessel.position[0]]}
         eventHandlers={{
           click: () => onVesselSelect(vessel.id)
         }}
       >
+        <div className="vessel-marker-wrapper" style={{ display: 'none' }}>
+          {/* This is a workaround to set the icon - the react-leaflet API changed */}
+          {(() => {
+            // @ts-ignore - we're applying the icon directly to the marker element
+            const markerElement = document.querySelector(`[data-vessel-id="${vessel.id}"]`);
+            if (markerElement) {
+              // @ts-ignore - applying icon to leaflet marker instance
+              markerElement._icon = vesselIcon;
+            }
+            return null;
+          })()}
+        </div>
         <Popup>
           <div className="vessel-popup-content">
             <h3 className="text-lg font-semibold">{vessel.name}</h3>
@@ -192,26 +209,51 @@ const Map: React.FC<MapProps> = ({
   }) : [];
 
   // Create port markers
-  const portMarkers = mapMode === 'routes' || mapMode === 'both' ? ports.map(port => (
-    <CircleMarker
-      key={port.id}
-      center={[port.position[1], port.position[0]]}
-      radius={5}
-      pathOptions={{
-        fillColor: '#4B5563',
-        fillOpacity: 0.8,
-        color: 'white',
-        weight: 2
-      }}
-    >
-      <Popup>
-        <div className="vessel-popup-content">
-          <h3 className="text-lg font-semibold">{port.name}</h3>
-          <p className="text-sm">{port.country}</p>
-        </div>
-      </Popup>
-    </CircleMarker>
-  )) : [];
+  const portMarkers = mapMode === 'routes' || mapMode === 'both' ? ports.map(port => {
+    const isSelectable = selectingOrigin || selectingDestination;
+    const fillColor = isSelectable ? '#2563EB' : '#4B5563';
+    
+    return (
+      <CircleMarker
+        key={port.id}
+        center={[port.position[1], port.position[0]]}
+        pathOptions={{
+          fillColor,
+          fillOpacity: 0.8,
+          color: 'white',
+          weight: 2,
+          radius: 5
+        }}
+        eventHandlers={{
+          click: () => {
+            if (isSelectable && onPortSelect) {
+              onPortSelect(port.id);
+            }
+          }
+        }}
+      >
+        <Popup>
+          <div className="vessel-popup-content">
+            <h3 className="text-lg font-semibold">{port.name}</h3>
+            <p className="text-sm">{port.country}</p>
+            {isSelectable && (
+              <button 
+                className="mt-2 text-xs px-3 py-1 bg-primary/10 text-primary rounded hover:bg-primary/20 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onPortSelect) {
+                    onPortSelect(port.id);
+                  }
+                }}
+              >
+                Select {selectingOrigin ? 'as Origin' : 'as Destination'}
+              </button>
+            )}
+          </div>
+        </Popup>
+      </CircleMarker>
+    );
+  }) : [];
 
   // Create route lines
   const routeLines = mapMode === 'routes' || mapMode === 'both' ? routes.map(route => {
@@ -255,15 +297,15 @@ const Map: React.FC<MapProps> = ({
   return (
     <div className={`w-full h-full rounded-lg overflow-hidden shadow-lg border ${className}`}>
       <MapContainer
-        center={[52, 5]} // Center on Netherlands
-        zoom={5}
+        defaultCenter={[52, 5]} // Center on Netherlands
+        defaultZoom={5}
         style={{ height: '100%', width: '100%' }}
         zoomControl={false}
         attributionControl={false}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         {vesselMarkers}
         {portMarkers}

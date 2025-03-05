@@ -10,7 +10,8 @@ import {
   mockRoutes, 
   Port, 
   Route,
-  searchPorts
+  searchPorts,
+  getPortById
 } from '../data/mockRouteData';
 
 export type MapMode = 'vessels' | 'routes' | 'both';
@@ -35,6 +36,14 @@ export function useMapData({
   const [selectedOriginId, setSelectedOriginId] = useState<string | undefined>();
   const [selectedDestinationId, setSelectedDestinationId] = useState<string | undefined>();
   const [selectedRoute, setSelectedRoute] = useState<Route | undefined>();
+  const [calculatedRoute, setCalculatedRoute] = useState<{
+    waypoints: [number, number][];
+    distance: number;
+    duration: number;
+  } | null>(null);
+  
+  const [selectingOrigin, setSelectingOrigin] = useState(false);
+  const [selectingDestination, setSelectingDestination] = useState(false);
   
   // Filter vessels based on status
   const filteredVessels = statusFilter 
@@ -67,6 +76,53 @@ export function useMapData({
       setSelectedRoute(undefined);
     }
   }, [selectedOriginId, selectedDestinationId]);
+  
+  // Handle port selection on map
+  const handlePortSelect = (portId: string) => {
+    if (selectingOrigin) {
+      setSelectedOriginId(portId);
+      setSelectingOrigin(false);
+    } else if (selectingDestination) {
+      setSelectedDestinationId(portId);
+      setSelectingDestination(false);
+    }
+  };
+  
+  // Handle calculated route from Sea Route API
+  const handleCalculatedRoute = (
+    waypoints: [number, number][], 
+    distance: number, 
+    duration: number
+  ) => {
+    if (selectedOriginId && selectedDestinationId) {
+      const origin = getPortById(selectedOriginId);
+      const destination = getPortById(selectedDestinationId);
+      
+      if (origin && destination) {
+        // Create a custom route from the calculated data
+        const calculatedRoute: Route = {
+          id: `calculated-${origin.id}-${destination.id}`,
+          origin,
+          destination,
+          waypoints,
+          distance,
+          averageTime: duration
+        };
+        
+        setSelectedRoute(calculatedRoute);
+        setCalculatedRoute({
+          waypoints,
+          distance,
+          duration
+        });
+        
+        // Switch to routes mode to show the calculated route
+        if (mapMode === 'vessels') {
+          setMapMode('both');
+        }
+      }
+    }
+  };
 
   // Simulate vessels moving every 3 seconds
   useEffect(() => {
@@ -93,7 +149,7 @@ export function useMapData({
     selectedVessel,
     setSelectedVesselId,
     ports: mockPorts,
-    routes: mockRoutes,
+    routes: selectedRoute && calculatedRoute ? [...mockRoutes, selectedRoute] : mockRoutes,
     selectedRoute,
     mapMode,
     setMapMode,
@@ -105,6 +161,13 @@ export function useMapData({
     selectedOriginId,
     setSelectedOriginId,
     selectedDestinationId,
-    setSelectedDestinationId
+    setSelectedDestinationId,
+    selectingOrigin,
+    setSelectingOrigin,
+    selectingDestination,
+    setSelectingDestination,
+    handlePortSelect,
+    handleCalculatedRoute,
+    calculatedRoute
   };
 }
